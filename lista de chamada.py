@@ -60,7 +60,7 @@ def main(page: ft.Page):
     observacao_textfields = []
     container_principal = ft.Container()
     
-    # Campo de texto para pesquisa por nome
+
     campo_pesquisa = ft.TextField(
         hint_text="Digite o nome do aluno...",
         width=250,
@@ -169,8 +169,8 @@ def main(page: ft.Page):
             dropdown.color = ft.Colors.BLACK87
         for tf in observacao_textfields:
             tf.value = ""
-        campo_pesquisa.value = ""  # Limpa a pesquisa
-        carregar_alunos_turma(turma_atual)  # Recarrega para mostrar todos os alunos
+        campo_pesquisa.value = "" 
+        carregar_alunos_turma(turma_atual)  
         page.update()
 
     def atualizar_cor_dropdown(dropdown):
@@ -195,11 +195,11 @@ def main(page: ft.Page):
         nonlocal turma_atual
         turma_atual = e.control.value
         texto_turma.value = f"Turma: {turma_atual}"
-        campo_pesquisa.value = ""  # Limpa a pesquisa ao mudar de turma
+        campo_pesquisa.value = ""  
         carregar_alunos_turma(turma_atual)
         page.update()
 
-    # Função para filtrar alunos por nome
+
     def filtrar_alunos():
         termo_pesquisa = campo_pesquisa.value.lower().strip() if campo_pesquisa.value else ""
         alunos = turmas.get(turma_atual, [])
@@ -369,3 +369,4 @@ def main(page: ft.Page):
     page.add(layout_principal)
 
 ft.app(target=main)
+
