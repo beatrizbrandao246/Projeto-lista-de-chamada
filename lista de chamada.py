@@ -23,6 +23,30 @@ def main(page: ft.Page):
     )
 
     turmas = {
+
+        "Todos os Alunos": [
+            "Ana Silva",
+            "Bruno Costa", 
+            "Carla Santos",
+            "Daniel Oliveira",
+            "Eduarda Lima"
+            "Fernando Alves",
+            "Gabriela Rocha", 
+            "Henrique Dias",
+            "Isabela Martins",
+            "João Barbosa"
+            "Pedro de Alcântara",
+            "Maria Eduarda Silva",
+            "João Pedro Almeida",
+            "Ana Clara Mendonça",
+            "Carlos Eduardo Lima",
+            "Fernanda Cristina Costa",
+            "Ricardo Augusto Souza",
+            "Juliana Beatriz Alves",
+            "Lucas Gabriel Mendes",
+            "Patrícia Isabela Gomes",
+        ],
+
         "1º Ano A": [
             "Ana Silva",
             "Bruno Costa", 
@@ -195,7 +219,7 @@ def main(page: ft.Page):
         nonlocal turma_atual
         turma_atual = e.control.value
         texto_turma.value = f"Turma: {turma_atual}"
-        campo_pesquisa.value = ""  
+        campo_pesquisa.value = "" 
         carregar_alunos_turma(turma_atual)
         page.update()
 
@@ -369,4 +393,3 @@ def main(page: ft.Page):
     page.add(layout_principal)
 
 ft.app(target=main)
-
