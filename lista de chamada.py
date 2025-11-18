@@ -2,158 +2,113 @@ import flet as ft
 import datetime
 
 def main(page: ft.Page):
+
     page.theme_mode = "light"
     page.title = "Lista de Chamada Escolar"
     page.window.maximized = True
     page.padding = 15
     page.scroll = "adaptive"
     page.locale_configuration = ft.LocaleConfiguration(
-        supported_locales=[
-            ft.Locale( "pt" , "BR" ),
-         ],
-        current_locale=ft.Locale( "de" , "DE" ),
+        supported_locales=[ft.Locale("pt", "BR")],
+        current_locale=ft.Locale("pt", "BR"),
     )
-    
+
     texto = ft.Text(
         "Lista de Chamada Escolar",
         size=24,
         weight=ft.FontWeight.BOLD,
-        color=ft.Colors.BLACK,
         text_align=ft.TextAlign.CENTER,
     )
 
     turmas = {
-
-        "Todos os Alunos": [
-            "Ana Silva",
-            "Bruno Costa", 
-            "Carla Santos",
-            "Daniel Oliveira",
-            "Eduarda Lima"
-            "Fernando Alves",
-            "Gabriela Rocha", 
-            "Henrique Dias",
-            "Isabela Martins",
-            "João Barbosa"
-            "Pedro de Alcântara",
-            "Maria Eduarda Silva",
-            "João Pedro Almeida",
-            "Ana Clara Mendonça",
-            "Carlos Eduardo Lima",
-            "Fernanda Cristina Costa",
-            "Ricardo Augusto Souza",
-            "Juliana Beatriz Alves",
-            "Lucas Gabriel Mendes",
-            "Patrícia Isabela Gomes",
-        ],
-
-        "1º Ano A": [
-            "Ana Silva",
-            "Bruno Costa", 
-            "Carla Santos",
-            "Daniel Oliveira",
-            "Eduarda Lima"
-        ],
-        "1º Ano B": [
-            "Fernando Alves",
-            "Gabriela Rocha", 
-            "Henrique Dias",
-            "Isabela Martins",
-            "João Barbosa"
-        ],
-        "2º Ano A": [
-            "Pedro de Alcântara",
-            "Maria Eduarda Silva",
-            "João Pedro Almeida"
-        ],
-        "2º Ano B": [
-            "Ana Clara Mendonça",
-            "Carlos Eduardo Lima",
-            "Fernanda Cristina Costa"
-        ],
-        "3º Ano": [
-            "Ricardo Augusto Souza",
-            "Juliana Beatriz Alves",
-            "Lucas Gabriel Mendes",
-            "Patrícia Isabela Gomes"
-        ]
+        "1º Ano A": ["Ana Silva", "Bruno Costa", "Carla Santos", "Daniel Oliveira", "Eduarda Lima"],
+        "1º Ano B": ["Fernando Alves", "Gabriela Rocha", "Henrique Dias", "Isabela Martins", "João Barbosa"],
+        "2º Ano A": ["Pedro de Alcântara", "Maria Eduarda Silva", "João Pedro Almeida"],
+        "2º Ano B": ["Ana Clara Mendonça", "Carlos Eduardo Lima", "Fernanda Cristina Costa"],
+        "3º Ano": ["Ricardo Augusto Souza", "Juliana Beatriz Alves", "Lucas Gabriel Mendes", "Patrícia Isabela Gomes"],
     }
+
+    todos = []
+    for v in turmas.values():
+        todos.extend(v)
+    turmas["Todos os Alunos"] = sorted(set(todos))
 
     turma_atual = "1º Ano A"
     status_dropdowns = []
     observacao_textfields = []
     container_principal = ft.Container()
-    
-
-    campo_pesquisa = ft.TextField(
-        hint_text="Digite o nome do aluno...",
-        width=250,
-        text_size=14,
-        border_color=ft.Colors.BLUE_400,
-        border_width=1,
-        border_radius=10,
-        on_change=lambda e: filtrar_alunos()
-    )
 
     def criar_cabecalho():
         return ft.Container(
             content=ft.Row(
                 controls=[
-                    ft.Container(
-                        content=ft.Text(
-                            "Nome do Aluno",
-                            size=18,
-                            weight=ft.FontWeight.BOLD,
-                            text_align=ft.TextAlign.LEFT,
-                            color=ft.Colors.BLACK87,  
-                        ),
-                        expand=3,
-                        padding=10,
-                        alignment=ft.alignment.center_left,
-                    ),
-                    ft.Container(
-                        content=ft.Text(
-                            "Status",
-                            size=18,
-                            weight=ft.FontWeight.BOLD,
-                            text_align=ft.TextAlign.CENTER,
-                            color=ft.Colors.BLACK87
-                        ),
-                        expand=2,
-                        padding=15,
-                        alignment=ft.alignment.center,
-                    ),
-                    ft.Container(
-                        content=ft.Text(
-                            "Observações",
-                            size=18,
-                            weight=ft.FontWeight.BOLD,
-                            text_align=ft.TextAlign.LEFT,
-                            color=ft.Colors.BLACK87,
-                        ),
-                        expand=2,
-                        padding=15,
-                        alignment=ft.alignment.center_left,
-                    ),
+                    ft.Container(ft.Text("Nome do Aluno", size=18, weight=ft.FontWeight.BOLD, color=ft.Colors.BLACK87),
+                                 expand=3, padding=10, alignment=ft.alignment.center_left),
+                    ft.Container(ft.Text("Status", size=18, weight=ft.FontWeight.BOLD, color=ft.Colors.BLACK87),
+                                 expand=1, padding=10, alignment=ft.alignment.center),
+                    ft.Container(ft.Text("Observações", size=18, weight=ft.FontWeight.BOLD, color=ft.Colors.BLACK87),
+                                 expand=2, padding=10, alignment=ft.alignment.center_left),
                 ],
                 expand=True,
             ),
-            padding=10,
-            bgcolor=ft.Colors.YELLOW_100,  
+            bgcolor=ft.Colors.YELLOW_100,
             border_radius=10,
+            padding=10,
             margin=ft.margin.only(bottom=10),
             expand=True,
         )
+
+    cabecalho_bg_light = ft.Colors.YELLOW_100
+    cabecalho_bg_dark = ft.Colors.GREY_400
+    cabecalho = criar_cabecalho()
 
     def toggle_theme(e):
         if page.theme_mode == "light":
             page.theme_mode = "dark"
             texto.color = ft.Colors.WHITE
+            cabecalho.bgcolor = cabecalho_bg_dark
+            container_filtros.bgcolor = ft.Colors.SURFACE_CONTAINER_HIGHEST
+            container_filtros.border = ft.border.all(1, ft.Colors.GREY_700)
+            container_filtros.shadow = ft.BoxShadow(blur_radius=8, color=ft.Colors.BLACK26)
+
+
+            campo_pesquisa.color = ft.Colors.WHITE
+            campo_pesquisa.hint_style = ft.TextStyle(color=ft.Colors.WHITE70)
+
+
+            for tf in observacao_textfields:
+                tf.bgcolor = ft.Colors.WHITE
+                tf.color = ft.Colors.BLACK
+                tf.hint_style = ft.TextStyle(color=ft.Colors.BLACK45)
+
+            for dd in status_dropdowns:
+                dd.bgcolor = ft.Colors.WHITE
+                dd.color = ft.Colors.BLACK
+
             e.control.selected = True
+
         else:
             page.theme_mode = "light"
             texto.color = ft.Colors.BLACK
+            cabecalho.bgcolor = cabecalho_bg_light
+            container_filtros.bgcolor = ft.Colors.WHITE
+            container_filtros.border = ft.border.all(1, ft.Colors.GREY_300)
+            container_filtros.shadow = ft.BoxShadow(blur_radius=8, color=ft.Colors.GREY_400)
+
+            campo_pesquisa.color = ft.Colors.BLACK
+            campo_pesquisa.hint_style = ft.TextStyle(color=ft.Colors.BLACK54)
+
+            for tf in observacao_textfields:
+                tf.bgcolor = None
+                tf.color = ft.Colors.BLACK
+                tf.hint_style = ft.TextStyle(color=ft.Colors.BLACK45)
+
+            for dd in status_dropdowns:
+                dd.bgcolor = None
+                dd.color = ft.Colors.BLACK87
+
             e.control.selected = False
+
         page.update()
 
     botao_tema = ft.IconButton(
@@ -161,18 +116,27 @@ def main(page: ft.Page):
         selected_icon=ft.Icons.WB_SUNNY,
         on_click=toggle_theme,
         selected=False,
-        style=ft.ButtonStyle(
-            color={"selected": ft.Colors.WHITE, "": ft.Colors.BLACK}
-        ),
+    )
+
+    texto_data = ft.Text("", size=14, color="black")
+
+    container_data = ft.Container(
+        content=texto_data,
+        padding=10,
+        bgcolor=ft.Colors.GREY_200,   
+        border_radius=8,
+        visible=False,
     )
 
     def handle_change(e):
-        texto_data.value = f"Data Escolhida: {e.control.value.strftime('%d/%m/%Y')}"
-        texto_data.visible = True
+        texto_data.value = f"Data escolhida: {e.control.value.strftime('%d/%m/%Y')}"
+        container_data.visible = True
         page.update()
 
     def handle_dismissal(e):
-        page.add(ft.Text("Data Invalida"))
+        page.snack_bar = ft.SnackBar(ft.Text("Data inválida"))
+        page.snack_bar.open = True
+        page.update()
 
     botao_calendario = ft.IconButton(
         icon=ft.Icons.CALENDAR_MONTH,
@@ -185,17 +149,6 @@ def main(page: ft.Page):
             )
         )
     )
-
-    def resetar_tudo(e):
-        for dropdown in status_dropdowns:
-            dropdown.value = None
-            dropdown.border_color = ft.Colors.BLUE_400
-            dropdown.color = ft.Colors.BLACK87
-        for tf in observacao_textfields:
-            tf.value = ""
-        campo_pesquisa.value = "" 
-        carregar_alunos_turma(turma_atual)  
-        page.update()
 
     def atualizar_cor_dropdown(dropdown):
         if dropdown.value == "Presente":
@@ -215,69 +168,16 @@ def main(page: ft.Page):
         atualizar_cor_dropdown(e.control)
         page.update()
 
-    def mudar_turma(e):
-        nonlocal turma_atual
-        turma_atual = e.control.value
-        texto_turma.value = f"Turma: {turma_atual}"
-        campo_pesquisa.value = "" 
-        carregar_alunos_turma(turma_atual)
-        page.update()
-
-
-    def filtrar_alunos():
-        termo_pesquisa = campo_pesquisa.value.lower().strip() if campo_pesquisa.value else ""
-        alunos = turmas.get(turma_atual, [])
-        
-        linhas = [criar_cabecalho()]
-        
-        for i, aluno in enumerate(alunos):
-
-            if not termo_pesquisa or termo_pesquisa in aluno.lower():
-                status_dropdown = status_dropdowns[i]
-                observacao_tf = observacao_textfields[i]
-                
-                nome_aluno = ft.Text(
-                    aluno,
-                    size=15,
-                    text_align=ft.TextAlign.LEFT,
-                    max_lines=2,
-                    overflow=ft.TextOverflow.ELLIPSIS,
-                    color=ft.Colors.BLACK87,
-                )
-
-                linha = ft.Container(
-                    content=ft.Row(
-                        controls=[
-                            ft.Container(nome_aluno, expand=3, alignment=ft.alignment.center_left, padding=10),
-                            ft.Container(status_dropdown, expand=1, alignment=ft.alignment.center),
-                            ft.Container(observacao_tf, expand=2, alignment=ft.alignment.center_left, padding=10),
-                        ],
-                        expand=True,
-                    ),
-                    padding=15,
-                    border_radius=10,
-                    bgcolor=ft.Colors.GREY_300,
-                    margin=ft.margin.only(bottom=8),
-                )
-                linhas.append(linha)
-        
-        container_principal.content = ft.Column(
-            controls=linhas, 
-            spacing=10, 
-            scroll=ft.ScrollMode.AUTO, 
-            expand=True
-        )
-        page.update()
-
-    def carregar_alunos_turma(turma_selecionada):
+    def carregar_alunos_turma(turma_selecionada, termo_pesquisa=""):
         status_dropdowns.clear()
         observacao_textfields.clear()
-        
         alunos = turmas.get(turma_selecionada, [])
-        
-        linhas = [criar_cabecalho()]
-        
+        linhas = [cabecalho]
+
         for aluno in alunos:
+            if termo_pesquisa and termo_pesquisa.lower() not in aluno.lower():
+                continue
+
             status_dropdown = ft.Dropdown(
                 width=150,
                 options=[
@@ -287,34 +187,31 @@ def main(page: ft.Page):
                 ],
                 hint_text="Selecione...",
                 text_size=14,
-                border_color=ft.Colors.BLACK87,
-                color=ft.Colors.BLACK87,
+                border_color=ft.Colors.BLUE_400,
                 border_width=1,
+                color=ft.Colors.BLACK87,
+                border_radius=10,
                 on_change=on_dropdown_change,
-                border_radius=10, 
             )
+
 
             observacao_tf = ft.TextField(
                 hint_text="Observações...",
                 border="underline",
-                multiline=False,
                 text_size=14,
+                color=ft.Colors.BLACK,
+                bgcolor=ft.Colors.WHITE if page.theme_mode == "dark" else None,
                 content_padding=ft.padding.symmetric(horizontal=10, vertical=5),
-                text_align=ft.TextAlign.LEFT,
-                color=ft.Colors.BLACK87,
-                cursor_color=ft.Colors.BLACK,
+                hint_style=ft.TextStyle(
+                    color=ft.Colors.BLACK45 if page.theme_mode == "dark" else ft.Colors.BLACK38
+                ),
             )
 
             status_dropdowns.append(status_dropdown)
             observacao_textfields.append(observacao_tf)
 
             nome_aluno = ft.Text(
-                aluno,
-                size=15,
-                text_align=ft.TextAlign.LEFT,
-                max_lines=2,
-                overflow=ft.TextOverflow.ELLIPSIS,
-                color=ft.Colors.BLACK87,
+                aluno, size=15, max_lines=2, overflow=ft.TextOverflow.ELLIPSIS, color=ft.Colors.BLACK87
             )
 
             linha = ft.Container(
@@ -328,47 +225,86 @@ def main(page: ft.Page):
                 ),
                 padding=15,
                 border_radius=10,
-                bgcolor=ft.Colors.GREY_300,
+                bgcolor=ft.Colors.GREY_200,
                 margin=ft.margin.only(bottom=8),
             )
             linhas.append(linha)
-        
-        container_principal.content = ft.Column(
-            controls=linhas, 
-            spacing=10, 
-            scroll=ft.ScrollMode.AUTO, 
-            expand=True
-        )
+
+        if len(linhas) == 1:
+            linhas.append(ft.Text("Nenhum aluno encontrado.", italic=True))
+
+        container_principal.content = ft.Column(controls=linhas, spacing=10, scroll=ft.ScrollMode.AUTO, expand=True)
+        page.update()
+
+
+    campo_pesquisa = ft.TextField(
+        hint_text="Digite o nome do aluno...",
+        width=300,
+        color=ft.Colors.BLACK,
+        hint_style=ft.TextStyle(color=ft.Colors.BLACK54),
+        on_change=lambda e: carregar_alunos_turma(turma_atual, campo_pesquisa.value.strip()),
+    )
+
+    texto_turma = ft.Text(f"Turma: {turma_atual}", size=14, weight=ft.FontWeight.BOLD)
+
+    def mudar_turma(e):
+        nonlocal turma_atual
+        turma_atual = e.control.value
+        texto_turma.value = f"Turma: {turma_atual}"
+        campo_pesquisa.value = ""
+        carregar_alunos_turma(turma_atual)
+        page.update()
 
     dropdown_turmas = ft.Dropdown(
-        width=200,
-        options=[ft.dropdown.Option(turma) for turma in turmas.keys()],
+        width=220,
+        options=[ft.dropdown.Option(t) for t in turmas.keys()],
         value=turma_atual,
-        on_change=mudar_turma,
         text_size=12,
         border_color=ft.Colors.BLACK87,
         border_width=1,
-        border_radius=50
+        border_radius=50,
+        on_change=mudar_turma,  
     )
 
-    texto_turma = ft.Text(
-        f"Turma: {turma_atual}",
-        size=14,
-        weight=ft.FontWeight.BOLD,
-        color=ft.Colors.BLACK87,
+    filtros_row = ft.Row(
+        controls=[
+            ft.Row(
+                controls=[
+                    texto_turma,
+                    dropdown_turmas,
+                ],
+                spacing=10,
+                vertical_alignment=ft.CrossAxisAlignment.CENTER,
+            ),
+            campo_pesquisa,
+        ],
+        alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+        vertical_alignment=ft.CrossAxisAlignment.CENTER,
     )
 
-    botao_salvar = ft.ElevatedButton("Salvar", bgcolor=ft.Colors.GREEN, color=ft.Colors.WHITE, width=200)
-    botao_reset = ft.ElevatedButton("Reset", bgcolor=ft.Colors.RED, color=ft.Colors.WHITE, width=200, on_click=resetar_tudo)
-
-    texto_data = ft.TextField(
-        "",
-        color=ft.Colors.BLACK,
-        bgcolor=ft.Colors.GREY_100,
-        width=280,
-        read_only=True,
-        visible=False,
+    container_filtros = ft.Container(
+        content=filtros_row,
+        padding=10,
+        border=ft.border.all(1, ft.Colors.GREY_300),
+        border_radius=12,
+        margin=ft.margin.only(bottom=10),
+        bgcolor=ft.Colors.WHITE,
+        shadow=ft.BoxShadow(blur_radius=8, color=ft.Colors.GREY_400),
     )
+
+    def resetar_tudo(e):
+        for dropdown in status_dropdowns:
+            dropdown.value = None
+            dropdown.border_color = ft.Colors.BLUE_400
+            dropdown.color = ft.Colors.BLACK87
+        for tf in observacao_textfields:
+            tf.value = ""
+        campo_pesquisa.value = ""
+        carregar_alunos_turma(turma_atual)
+        page.update()
+
+    botao_salvar = ft.ElevatedButton("Salvar", bgcolor="Green", color="WHITE", width=200)
+    botao_reset = ft.ElevatedButton("Reset", bgcolor=ft.Colors.RED_600, color=ft.Colors.WHITE, width=160, on_click=resetar_tudo)
 
     carregar_alunos_turma(turma_atual)
 
@@ -376,17 +312,12 @@ def main(page: ft.Page):
         [
             ft.Container(content=texto, padding=20, alignment=ft.alignment.center),
             ft.Divider(height=10),
-            ft.Row([botao_tema, botao_calendario, texto_data], alignment="center", spacing=20),
-            ft.Row([
-                texto_turma, 
-                dropdown_turmas,
-                ft.Container(expand=True), 
-                campo_pesquisa  
-            ], alignment="center", spacing=20),
+            ft.Row([botao_tema, botao_calendario, container_data], alignment="center", spacing=20),
+            container_filtros,
             container_principal,
             ft.Divider(height=15),
             ft.Row([botao_reset, botao_salvar], alignment="end", spacing=20),
-        ],  
+        ],
         expand=True,
     )
 
